@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>select</title>
+	<link href="select.css" rel="stylesheet">
+</head>
+<body>
+<div class="select-wrap-wrap">
+	<div id="" class="select-wrap">
+		<input class="input" type="text" readonly placeholder="请选择">
+		<ul>
+			<li data-value="1">one</li>
+			<li data-value="1">two</li>
+			<li data-value="1">three</li>
+			<li data-value="1">four</li>
+			<li data-value="1">five</li>
+		</ul>
+	</div>
+	<div id="select_wrap" class="select-wrap">
+		<input class="input" type="text" readonly placeholder="请选择">
+		<ul>
+			<li data-value="1">one</li>
+			<li data-value="1">two</li>
+			<li data-value="1">three</li>
+			<li data-value="1">four</li>
+			<li data-value="1">five</li>
+		</ul>
+	</div>
+	<div id="" class="select-wrap">
+		<input class="input" type="text" readonly placeholder="请选择">
+		<ul>
+			<li data-value="1">one</li>
+			<li data-value="1">two</li>
+			<li data-value="1">three</li>
+			<li data-value="1">four</li>
+			<li data-value="1">five</li>
+		</ul>
+	</div>
+
+</div>
+</body>
+<script src="../../src/js/jquery.min.js"></script>
+<script>
+	$(function () {
+		function forClose () {
+			this.handlers = {};
+		}
+		forClose.prototype = {
+			on:function (event,handlers) {
+				if (!(event in this.handlers)) {
+					this.handlers[event] = [];
+				}
+				this.handlers[event].push(handlers);
+			},
+			emit:function (event) {
+				var args = Array.prototype.slice.call(arguments,1);
+				for(var i = 0; i < this.handlers[event].length; i ++){
+					this.handlers[event][i].apply(this,args);
+				}
+			}
+		}
+		var clickDocument = new forClose();
+		$(document).on('click',function () {
+			clickDocument.emit('close');
+		})
+
+		function simulateSelect(before,open,select) {
+			var selectBtn = $('.select-wrap');
+			before && before();
+			selectBtn.find('input').click(function (event) {
+				event.stopPropagation();
+				open && open();
+				$(this).siblings('ul').slideDown(0);
+				clickDocument.on('close',function () {
+					$('.select-wrap').find('ul').hide();
+				})
+			})
+			selectBtn.on('click','ul li',function () {
+				$(this).parent('ul')
+						.slideUp(5)
+						.siblings('input')
+						.val($(this).html());
+				select && select($(this).attr('data-value'),$(this).html());
+
+			})
+		}
+		simulateSelect(function (data) {
+			console.log('here is before');
+		},function (data) {
+		console.log('here is open');
+		},function (data) {
+		console.log('here is ' + data);
+		}
+		);
+
+
+
+
+	})
+</script>
+</html>
